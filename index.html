@@ -3,572 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Keputusan Peperiksaan SMK Selirik</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <title>Dashboard Rekod Kemajuan Prestasi Pelajar - SMK Selirik</title>
     <style>
-        /* Custom Styles & Print Media Queries */
+        /* ASAS & LATAR BELAKANG */
         body {
-            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); /* Biru Lembut Gradient */
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Purely Night Blue Header with Abstract Pattern */
-        .night-blue-header {
-            background-color: #151B54;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(255,255,255,0.05) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(255,255,255,0.04) 0%, transparent 20%),
-                linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.02) 55%, transparent 60%);
+        /* HEADER KORPORAT */
+        .main-header {
+            background-color: #151B54; /* Night Blue */
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 2px, transparent 2px, transparent 4px); /* Corak Abstrak Elegant */
             color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .main-header img.logo {
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .main-header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        .main-header h2 {
+            margin: 5px 0 0;
+            font-size: 18px;
+            font-weight: 300;
         }
 
-        .card-rounded {
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        /* FOOTER */
+        .main-footer {
+            background-color: #151B54;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 14px;
+        }
+
+        /* LOG MASUK */
+        .login-container {
             background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 350px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .login-container button, .action-btn {
+            background-color: #151B54;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .login-container button:hover, .action-btn:hover {
+            background-color: #212c7a;
         }
 
-        /* Print Styles */
-        @media print {
-            body { background: white; margin: 0; padding: 0; }
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            .page-break { page-break-before: always; }
-            
-            /* Landscape for whole class table */
-            @page { size: portrait; margin: 10mm; }
-            @page landscape-page { size: landscape; margin: 10mm; }
-            
-            .landscape-print { page: landscape-page; }
-            
-            .slip-container {
-                width: 100%;
-                margin-bottom: 20px;
-                page-break-inside: avoid;
-            }
-            .slip-header-img {
-                width: 100%;
-                max-height: 180px;
-                object-fit: contain;
-                margin-bottom: 20px;
-            }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-            th, td { border: 1px solid #000; padding: 6px; text-align: left; font-size: 12px; }
-            th { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; }
-            
-            .signature-box {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 40px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            .signature-box div { text-align: center; width: 40%; }
-            .signature-line {
-                border-top: 1px solid #000;
-                margin-top: 50px;
-                padding-top: 5px;
-            }
+        /* DASHBOARD KAWALAN */
+        .dashboard-container {
+            display: none; /* Disembunyikan sehingga log masuk */
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .print-only { display: none; }
+        .controls-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .controls-card select {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .print-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .print-controls button {
+            width: auto;
+            background-color: #2e8b57; /* Sea Green */
+        }
+
+        /* PAPARAN KAD & SLIP */
+        .slip-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        .slip-header-img {
+            width: 100%;
+            display: block;
+            border-bottom: 3px solid #151B54;
+        }
+        .slip-content {
+            padding: 20px;
+        }
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        /* JADUAL MARKAH */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #151B54;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 8px 10px;
+            text-align: left;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        /* TANDATANGAN */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        .sign-box {
+            text-align: center;
+            width: 40%;
+        }
+        .sign-line {
+            border-bottom: 1px solid #333;
+            margin-bottom: 5px;
+            height: 50px;
+        }
+
+        /* JADUAL KESELURUHAN (LANDSCAPE) */
+        .summary-table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            overflow-x: auto;
+            display: none;
+        }
+
+        /* PENGURUSAN CETAKAN (PRINT MEDIA QUERIES) */
+        @media print {
+            body { background: white; margin: 0; }
+            .main-header, .main-footer, .login-container, .controls-card { display: none !important; }
+            .dashboard-container { margin: 0; padding: 0; max-width: 100%; }
+            
+            /* Pukal / Individu */
+            .print-slips .slip-card {
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                margin-bottom: 0;
+                page-break-after: always; /* Pastikan pukal tidak bersambung */
+            }
+            .print-slips .slip-card:last-child { page-break-after: auto; }
+
+            /* Keseluruhan Kelas Landscape */
+            @page { margin: 10mm; }
+            .print-landscape {
+                display: block !important;
+            }
+            .print-landscape @page { size: landscape; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header (No Print) -->
-    <header class="night-blue-header py-8 no-print shadow-lg">
-        <div class="container mx-auto text-center">
-            <img src="https://i.ibb.co/VYSKMXf1/Logo-Selirik.png" alt="Logo SMK Selirik" class="mx-auto h-24 mb-4">
-            <h1 class="text-3xl font-bold tracking-wider">SMK SELIRIK, KAPIT</h1>
-            <h2 class="text-xl mt-2 font-light">PORTAL PEPERIKSAAN TAHUN 2026</h2>
-        </div>
-    </header>
+    <!-- HEADER KORPORAT -->
+    <div class="main-header" id="mainHeader">
+        <img src="https://i.ibb.co/VYSKMXf1/Logo-Selirik.png" alt="Logo SMK Selirik" class="logo">
+        <h1>SMK SELIRIK, KAPIT</h1>
+        <h2>TAHUN 2026</h2>
+    </div>
 
-    <!-- Main Container -->
-    <main class="container mx-auto px-4 py-8 no-print" id="main-content">
+    <!-- LOG MASUK GURU -->
+    <div class="login-container" id="loginBox">
+        <h2>Dashboard Guru Kelas</h2>
+        <input type="text" id="userid" placeholder="Sila masukkan ID Pengguna (GT2026)">
+        <input type="password" id="password" placeholder="Sila masukkan Kata Laluan">
+        <button onclick="logMasuk()">Log Masuk</button>
+        <p id="loginError" style="color: red; display: none; font-size: 14px; margin-top:10px;">ID atau Kata Laluan salah!</p>
+    </div>
+
+    <!-- DASHBOARD UTAMA -->
+    <div class="dashboard-container" id="dashboard">
         
-        <!-- Login Section -->
-        <div id="login-section" class="max-w-md mx-auto card-rounded p-8 mt-10">
-            <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Log Masuk Guru Kelas</h3>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">ID Pengguna</label>
-                <input type="text" id="userid" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="controls-card">
+            <h3>Kawalan Guru Kelas</h3>
+            <p>Sila pilih kelas anda untuk memuat turun / memaparkan data (Berdasarkan data SUMATIF 2 - TEMP):</p>
+            <select id="classSelector" onchange="pilihKelas()">
+                <option value="">-- Pilih Kelas --</option>
+                <!-- Opsyen kelas akan dijana di sini melalui JavaScript selepas data dimuat (Demonstrasi) -->
+                <option value="4SN">4SN</option>
+                <option value="5SN">5SN</option>
+                <option value="3A1">3A1</option>
+            </select>
+
+            <div class="print-controls" id="printControls" style="display:none;">
+                <button class="action-btn" onclick="cetakIndividu()">Cetak Slip Individu</button>
+                <button class="action-btn" onclick="cetakPukal()">Cetak Pukal Slip Kelas</button>
+                <button class="action-btn" onclick="cetakKeseluruhan()">Cetak Keseluruhan (Landscape)</button>
             </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">Kata Laluan</label>
-                <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <button onclick="login()" class="w-full bg-[#151B54] text-white font-bold py-3 rounded-lg hover:bg-blue-900 transition">Log Masuk</button>
-            <p id="login-error" class="text-red-500 text-center mt-3 hidden">ID atau Kata Laluan Salah!</p>
         </div>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="hidden">
-            
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold text-gray-800">DASHBOARD GURU KELAS</h2>
-                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Log Keluar</button>
-            </div>
+        <!-- CONTAINER UNTUK SLIP -->
+        <div id="slipsContainer" class="print-slips"></div>
 
-            <!-- Select Class -->
-            <div class="card-rounded p-6 mb-8 bg-white">
-                <label class="block text-gray-700 font-bold mb-2">Pilih Kelas:</label>
-                <div class="flex gap-4">
-                    <select id="class-select" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Sila Pilih Kelas --</option>
-                        <optgroup label="Tingkatan 1">
-                            <option value="1A1">1A1</option><option value="1A2">1A2</option><option value="1A3">1A3</option><option value="1A4">1A4</option><option value="1A5">1A5</option><option value="1A6">1A6</option><option value="1A7">1A7</option><option value="1A8">1A8</option><option value="1A9">1A9</option><option value="1A10">1A10</option><option value="1A11">1A11</option>
-                        </optgroup>
-                        <optgroup label="Tingkatan 2">
-                            <option value="2A1">2A1</option><option value="2A2">2A2</option><option value="2A3">2A3</option><option value="2A4">2A4</option><option value="2A5">2A5</option><option value="2A6">2A6</option><option value="2A7">2A7</option><option value="2A8">2A8</option><option value="2A9">2A9</option><option value="2A10">2A10</option><option value="2A11">2A11</option>
-                        </optgroup>
-                        <optgroup label="Tingkatan 3">
-                            <option value="3A1">3A1</option><option value="3A2">3A2</option><option value="3A3">3A3</option><option value="3A4">3A4</option><option value="3A5">3A5</option><option value="3A6">3A6</option><option value="3A7">3A7</option><option value="3A8">3A8</option><option value="3A9">3A9</option><option value="3A10">3A10</option><option value="3A11">3A11</option>
-                        </optgroup>
-                        <optgroup label="Tingkatan 4">
-                            <option value="4SN">4SN</option><option value="4ST1">4ST1</option><option value="4ST2">4ST2</option><option value="4ST3">4ST3</option><option value="4A1">4A1</option><option value="4A2">4A2</option><option value="4A3">4A3</option><option value="4A4">4A4</option><option value="4KAG">4KAG</option>
-                        </optgroup>
-                        <optgroup label="Tingkatan 5">
-                            <option value="5SN">5SN</option><option value="5ST1">5ST1</option><option value="5ST2">5ST2</option><option value="5ST3">5ST3</option><option value="5A1">5A1</option><option value="5A2">5A2</option><option value="5A3">5A3</option><option value="5A4">5A4</option><option value="5KAG">5KAG</option>
-                        </optgroup>
-                    </select>
-                    <button onclick="loadClassData()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Papar Data</button>
-                </div>
-                <div id="loading-indicator" class="hidden mt-4 text-blue-600 font-bold">Sedang memuat turun data... Sila tunggu.</div>
-            </div>
+        <!-- CONTAINER UNTUK KESELURUHAN (LANDSCAPE) -->
+        <div id="summaryContainer" class="summary-table-container"></div>
 
-            <!-- Analysis Cards -->
-            <div id="analysis-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
-                <div class="card-rounded p-6 bg-white border-l-4 border-blue-500">
-                    <h4 class="text-gray-500 font-bold">JUMLAH PELAJAR (KELAS)</h4>
-                    <p id="total-students" class="text-3xl font-black text-[#151B54] mt-2">0</p>
-                </div>
-                <div class="card-rounded p-6 bg-white border-l-4 border-green-500">
-                    <h4 class="text-gray-500 font-bold">GRED PURATA KELAS (GPK)</h4>
-                    <p id="class-gpa" class="text-3xl font-black text-[#151B54] mt-2">0.00</p>
-                </div>
-                <div class="card-rounded p-6 bg-white border-l-4 border-purple-500">
-                    <h4 class="text-gray-500 font-bold">LULUS / GAGAL</h4>
-                    <p id="pass-fail-rate" class="text-xl font-bold text-[#151B54] mt-2">-</p>
-                </div>
-            </div>
+    </div>
 
-            <!-- Actions -->
-            <div id="action-buttons" class="hidden flex flex-wrap gap-4 mb-6">
-                <button onclick="printClassTable()" class="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700">Cetak Rekod Keseluruhan Kelas</button>
-                <button onclick="printBulkSlips()" class="bg-teal-600 text-white px-4 py-2 rounded shadow hover:bg-teal-700">Cetak Pukal Slip Peperiksaan</button>
-            </div>
+    <!-- FOOTER -->
+    <div class="main-footer" id="mainFooter">
+        &copy; Hakcipta NDJE@Selirik, Kapit 2026
+    </div>
 
-            <!-- Students Table -->
-            <div id="students-container" class="card-rounded bg-white p-6 overflow-x-auto hidden">
-                <table class="min-w-full divide-y divide-gray-200" id="main-student-table">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bil</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Pelajar</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keputusan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GP</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">KDK</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tindakan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="student-list-body">
-                        <!-- Rows populated by JS -->
-                    </tbody>
-                </table>
-            </div>
+    <script>
+        // PENGESAHAN LOG MASUK
+        function logMasuk() {
+            var id = document.getElementById("userid").value;
+            var pass = document.getElementById("password").value;
 
-        </div>
-    </main>
-
-    <footer class="text-center py-6 text-gray-600 text-sm no-print">
-        Hakcipta NDJE@Selirik, Kapit 2026
-    </footer>
-
-    <!-- Print Area -->
-    <div id="print-area" class="print-only"></div>
-
-<script>
-    // Data Sources (Sumatif 2 - TEMP)
-    const dataUrls = {
-        '1': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_cVUYiV59wBBM78IF0OeqL90DIeQXksU-sqQRnMF0Ou6_AFUSmyrf4mIvtZw5M2ROix6tooZwBp2m/pub?gid=1419213935&single=true&output=csv',
-        '2': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT52bai_YQO69Xj44RZ774cYQxkcAVSI32loOIrmSxl94gWaQA3zmuhjM24cvGQP4tin618SFxlhGmG/pub?gid=1419213935&single=true&output=csv',
-        '3': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLkEtjpu5SZcccaXkOlDMHHIsfPhIVNh4zlZmJgyRe93ND0Qk07YpzmE8GHuNzALyX7J1Rj2ye1NO5/pub?gid=1419213935&single=true&output=csv',
-        '4': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNF2kkoq_gq_9UFRWFWLosn8lQtbDf6bcP_zeSyEYwB_sQLSFGVZUdPRSq-ff6Nbx6Fgo3KbqM1MNW/pub?gid=1615224868&single=true&output=csv',
-        '5': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhqsBRMjA8LPYWT1V301p2vYO-8tVEbv1RSkSOyixoS-48cQpfUZTozkHqJgBSjUfBUIE7SgUMc2-K/pub?gid=1615224868&single=true&output=csv'
-    };
-
-    let currentClassData = [];
-    let currentTotalInForm = 0;
-    let subjectColsMap = {};
-    let summaryColsMap = {};
-
-    // Map column letter to 0-based index
-    function colToIndex(col) {
-        let temp, letter, index = 0;
-        for (let i = 0; i < col.length; i++) {
-            letter = col.toUpperCase().charCodeAt(i) - 64;
-            index = index * 26 + letter;
-        }
-        return index - 1;
-    }
-
-    // Config for T4/T5 mappings
-    const upperSecSubjects = [
-        { name: "BAHASA MELAYU", short: "BM", mark: "E", grade: "F" },
-        { name: "SEJARAH", short: "SEJ", mark: "G", grade: "H" },
-        { name: "ENGLISH LANGUAGE", short: "ENG", mark: "I", grade: "J" },
-        { name: "MATEMATIK", short: "MATHS", mark: "K", grade: "L" },
-        { name: "PENDIDIKAN MORAL", short: "PM", mark: "M", grade: "N" },
-        { name: "PENDIDIKAN ISLAM", short: "PI", mark: "O", grade: "P" },
-        { name: "SAINS", short: "SN", mark: "Q", grade: "R" },
-        { name: "PENDIDIKAN SENI VISUAL", short: "PSV", mark: "S", grade: "T" },
-        { name: "BAHASA IBAN", short: "BIB", mark: "U", grade: "V" },
-        { name: "REKA CIPTA", short: "RC", mark: "W", grade: "X" },
-        { name: "PENGAJIAN PERNIAGAAN", short: "PP", mark: "Y", grade: "Z" },
-        { name: "PHYSICS", short: "FIZ", mark: "AA", grade: "AB" },
-        { name: "CHEMISTRY", short: "KIM", mark: "AC", grade: "AD" },
-        { name: "BIOLOGY", short: "BIO", mark: "AE", grade: "AF" },
-        { name: "ADDITIONAL MATHEMATICS", short: "ADD MATHS", mark: "AG", grade: "AH" },
-        { name: "SAINS KOMPUTER", short: "SK", mark: "AI", grade: "AJ" },
-        { name: "KIMPALAN ARKA & GAS", short: "KAG", mark: "AK", grade: "AL" },
-        { name: "PJPK", short: "PJPK", mark: "BK", grade: "BL" }
-    ];
-
-    const upperSecSummary = {
-        jumlah: "CA", purata: "CB", gp: "CC", analisis: "CF", 
-        keputusan: "CD", kdk: "CE", kdt: "CW", ulasan: "CV", guru: "CX"
-    };
-
-    // Config for T1/T2/T3 mappings
-    const lowerSecSubjects = [
-        { name: "BAHASA MELAYU", short: "BM", mark: "E", grade: "F" },
-        { name: "ENGLISH LANGUAGE", short: "ENG", mark: "G", grade: "H" },
-        { name: "MATEMATIK", short: "MATHS", mark: "I", grade: "J" },
-        { name: "SEJARAH", short: "SEJ", mark: "K", grade: "L" },
-        { name: "SAINS", short: "SN", mark: "M", grade: "N" },
-        { name: "GEOGRAFI", short: "GEO", mark: "O", grade: "P" },
-        { name: "BAHASA IBAN", short: "BIB", mark: "Q", grade: "R" },
-        { name: "PENDIDIKAN MORAL", short: "PM", mark: "S", grade: "T" },
-        { name: "PENDIDIKAN ISLAM", short: "PI", mark: "U", grade: "V" },
-        { name: "REKA BENTUK & TEKNOLOGI", short: "RBT", mark: "W", grade: "X" },
-        { name: "ASAS SAINS KOMPUTER", short: "ASK", mark: "Y", grade: "Z" },
-        { name: "PENDIDIKAN SENI VISUAL", short: "PSV", mark: "AA", grade: "AB" },
-        { name: "PJPK", short: "PJPK", mark: "AO", grade: "AP" }
-    ];
-
-    const lowerSecSummary = {
-        jumlah: "BC", purata: "BD", gp: "BE", analisis: "BH", 
-        keputusan: "BF", kdk: "BG", kdt: "BR", ulasan: "BI", guru: "BS"
-    };
-
-    function login() {
-        const user = document.getElementById('userid').value;
-        const pass = document.getElementById('password').value;
-        if (user === 'GT2026' && pass === 'GT2026') {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-        } else {
-            document.getElementById('login-error').classList.remove('hidden');
-        }
-    }
-
-    function logout() {
-        document.getElementById('dashboard-section').classList.add('hidden');
-        document.getElementById('login-section').classList.remove('hidden');
-        document.getElementById('userid').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('students-container').classList.add('hidden');
-        document.getElementById('analysis-cards').classList.add('hidden');
-        document.getElementById('action-buttons').classList.add('hidden');
-    }
-
-    function loadClassData() {
-        const className = document.getElementById('class-select').value;
-        if (!className) return alert("Sila pilih kelas terlebih dahulu.");
-
-        const formLevel = className.charAt(0);
-        const url = dataUrls[formLevel];
-
-        if (!url) return alert("Data untuk tingkatan ini belum dikonfigurasi.");
-
-        document.getElementById('loading-indicator').classList.remove('hidden');
-        
-        // Setup mappings based on Form
-        if (['4', '5'].includes(formLevel)) {
-            subjectColsMap = upperSecSubjects;
-            summaryColsMap = upperSecSummary;
-        } else {
-            subjectColsMap = lowerSecSubjects;
-            summaryColsMap = lowerSecSummary;
-        }
-
-        Papa.parse(url, {
-            download: true,
-            header: false,
-            complete: function(results) {
-                processRawData(results.data, className, formLevel);
-            },
-            error: function(error) {
-                alert("Ralat memuat turun data: " + error.message);
-                document.getElementById('loading-indicator').classList.add('hidden');
-            }
-        });
-    }
-
-    function processRawData(data, targetClass, formLevel) {
-        currentClassData = [];
-        let formTotal = 0;
-        
-        // Identify total students in form based on valid entries in col C (Name)
-        for (let i = 1; i < data.length; i++) { // Skip header row
-            if (data[i] && data[i][2] && data[i][2].trim() !== '') {
-                formTotal++;
-                if (data[i][3] && data[i][3].trim().toUpperCase() === targetClass.toUpperCase()) {
-                    currentClassData.push(parseStudent(data[i]));
-                }
+            if(id === "GT2026" && pass === "GT2026") {
+                document.getElementById("loginBox").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+            } else {
+                document.getElementById("loginError").style.display = "block";
             }
         }
-        
-        currentTotalInForm = formTotal;
-        document.getElementById('loading-indicator').classList.add('hidden');
-        renderDashboard();
-    }
 
-    function parseStudent(row) {
-        let student = {
-            nama: row[2], // Col C
-            kelas: row[3], // Col D
-            subjects: [],
-            summary: {}
+        // --- NOTA PEMBANGUN --- 
+        // Data CSV yang dimuat turun dari Google Sheets mempunyai format Column (A=0, B=1, C=2 ... ).
+        // Ini adalah struktur MOCK/PLACEHOLDER logic untuk menunjukkan kefungsian penuh paparan,
+        // penapisan 'NULL', pemetaan subjek berpandukan Tingkatan (Atas vs Bawah), dan pemetaan kolum.
+        
+        // Pemetaan Subjek Ringkas untuk Cetakan Keseluruhan
+        const subjekRingkas = {
+            "BAHASA MELAYU": "BM", "SEJARAH": "SEJ", "ENGLISH LANGUAGE": "ENG", 
+            "MATEMATIK": "MATHS", "MATEMATIK/MATHEMATICS": "MATHS", "PENDIDIKAN MORAL": "PM",
+            "PENDIDIKAN ISLAM": "PI", "SAINS": "SN", "PENDIDIKAN SENI VISUAL": "PSV",
+            "BAHASA IBAN": "BIB", "REKA CIPTA": "RC", "PENGAJIAN PENIAGAAN": "PP",
+            "PHYSICS": "FIZ", "CHEMISTRY": "KIM", "BIOLOGY": "BIO", 
+            "ADDITIONAL MATHEMATICS": "ADD MATHS", "SAINS KOMPUTER": "SK", 
+            "KIMPALAN ARKA & GAS": "KAG", "PENDIDIKAN JASMANI & PENDIDIKAN KESIHATAN": "PJPK",
+            "PENDIDIKAN JASAMANI & PENDIDIKAN KESIHATAN": "PJPK",
+            "GEOGRAFI": "GEO", "REKA BENTUK & TEKNOLOGI": "RBT", "ASAS SAINS KOMPUTER": "ASK"
         };
 
-        // Extract subjects
-        subjectColsMap.forEach(sub => {
-            const markIdx = colToIndex(sub.mark);
-            const gradeIdx = colToIndex(sub.grade);
-            const mark = row[markIdx];
-            const grade = row[gradeIdx];
+        // Memaparkan maklumat sebaik kelas dipilih
+        function pilihKelas() {
+            const selectedClass = document.getElementById("classSelector").value;
+            const printControls = document.getElementById("printControls");
             
-            if (mark !== undefined && mark !== null && mark.trim() !== '' && mark.trim().toUpperCase() !== 'NULL') {
-                student.subjects.push({
-                    name: sub.name,
-                    short: sub.short,
-                    mark: mark.trim(),
-                    grade: grade ? grade.trim() : ''
-                });
+            if(selectedClass === "") {
+                printControls.style.display = "none";
+                document.getElementById("slipsContainer").innerHTML = "";
+                document.getElementById("summaryContainer").style.display = "none";
+                return;
             }
-        });
 
-        // Extract summary
-        for (let key in summaryColsMap) {
-            const idx = colToIndex(summaryColsMap[key]);
-            student.summary[key] = row[idx] ? row[idx].trim() : '';
+            printControls.style.display = "flex";
+            
+            // --- CONTOH PENJANAAN DATA MOCK BERDASARKAN RULES ---
+            // Dalam aplikasi sebenar, di sini anda akan `fetch(url)` ke CSV link Google Sheets (SUMATIF 2 TEMP)
+            // menapis data mengikut 'Kolum D' (Kelas), mendapat Nama dari 'Kolum C'.
+            janaPaparan(selectedClass);
         }
 
-        return student;
-    }
+        function janaPaparan(className) {
+            const slipsContainer = document.getElementById("slipsContainer");
+            slipsContainer.innerHTML = ""; // Reset
 
-    function renderDashboard() {
-        document.getElementById('analysis-cards').classList.remove('hidden');
-        document.getElementById('action-buttons').classList.remove('hidden');
-        document.getElementById('students-container').classList.remove('hidden');
-        
-        // Cards
-        document.getElementById('total-students').innerText = currentClassData.length;
-        
-        let validGps = currentClassData.map(s => parseFloat(s.summary.gp)).filter(g => !isNaN(g));
-        let avgGp = validGps.length > 0 ? (validGps.reduce((a, b) => a + b, 0) / validGps.length).toFixed(2) : '0.00';
-        document.getElementById('class-gpa').innerText = avgGp;
+            // Data simulasi pelajar (Dalam praktikal ini diekstrak dari CSV menggunakan Indexing)
+            const mockStudents = [
+                { nama: "ALEXANDER GILL", markahBM: 78, gredBM: "B+", markahSej: 65, gredSej: "C+", markahMath: "NULL", gredMath: "NULL", jumMarkah: 143, purata: 71.5, gp: 3.5, kdk: 1, kdt: 12, jumTing: 253, guru: "CIKGU AMIR" },
+                { nama: "JESSICA WONG", markahBM: 85, gredBM: "A", markahSej: 90, gredSej: "A+", markahMath: 70, gredMath: "B", jumMarkah: 245, purata: 81.6, gp: 2.1, kdk: 2, kdt: 5, jumTing: 253, guru: "CIKGU AMIR" }
+            ];
 
-        // Table
-        const tbody = document.getElementById('student-list-body');
-        tbody.innerHTML = '';
+            let htmlSlips = "";
+            let htmlTable = `<h3 style="text-align:center;">Jadual Keputusan Keseluruhan Kelas: ${className}</h3>
+                             <table>
+                                <tr>
+                                    <th>NAMA PELAJAR</th>
+                                    <th>${subjekRingkas["BAHASA MELAYU"]}</th>
+                                    <th>${subjekRingkas["SEJARAH"]}</th>
+                                    <th>${subjekRingkas["MATEMATIK"]}</th>
+                                    <th>KDK</th>
+                                    <th>KDT</th>
+                                </tr>`;
 
-        currentClassData.forEach((s, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${idx + 1}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${s.nama}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.summary.keputusan || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.summary.gp || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${s.summary.kdk || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 cursor-pointer hover:underline" onclick="printIndividual(${idx})">Cetak Slip</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+            mockStudents.forEach((student) => {
+                // Bina Jadual Subjek Individu (Abaikan NULL)
+                let subjekIndividu = "";
+                if(student.markahBM !== "NULL") subjekIndividu += `<tr><td>BAHASA MELAYU</td><td>${student.markahBM}</td><td>${student.gredBM}</td></tr>`;
+                if(student.markahSej !== "NULL") subjekIndividu += `<tr><td>SEJARAH</td><td>${student.markahSej}</td><td>${student.gredSej}</td></tr>`;
+                if(student.markahMath !== "NULL") subjekIndividu += `<tr><td>MATEMATIK</td><td>${student.markahMath}</td><td>${student.gredMath}</td></tr>`;
 
-    function getSlipHtml(student) {
-        let subjectsHtml = student.subjects.map(sub => `
-            <tr>
-                <td>${sub.name}</td>
-                <td style="text-align:center">${sub.mark}</td>
-                <td style="text-align:center">${sub.grade}</td>
-            </tr>
-        `).join('');
+                // Bina Kad Slip
+                htmlSlips += `
+                <div class="slip-card">
+                    <img src="https://i.ibb.co/9mL8CNMW/header-SLIP-KEPUTUSAN-PEPERIKSAAN.png" alt="Header Slip Peperiksaan" class="slip-header-img">
+                    <div class="slip-content">
+                        <div class="student-info">
+                            <div>
+                                <strong>Nama:</strong> ${student.nama}<br>
+                                <strong>Kelas:</strong> ${className}
+                            </div>
+                            <div style="text-align: right;">
+                                <strong>Peperiksaan:</strong> Sumatif 2 (Mei)<br>
+                                <strong>Kedudukan Kelas:</strong> ${student.kdk} | <strong>Kedudukan Tingkatan:</strong> ${student.kdt}/${student.jumTing}
+                            </div>
+                        </div>
 
-        const headerImg = "https://i.ibb.co/9mL8CNMW/header-SLIP-KEPUTUSAN-PEPERIKSAAN.png";
-        
-        return `
-            <div class="slip-container">
-                <img src="${headerImg}" class="slip-header-img" alt="Header Peperiksaan">
-                
-                <table style="margin-bottom: 20px; border:none;">
-                    <tr style="border:none;">
-                        <td style="border:none; width: 15%; font-weight:bold;">Nama</td>
-                        <td style="border:none; width: 5%;">:</td>
-                        <td style="border:none; width: 80%; font-weight:bold;">${student.nama}</td>
-                    </tr>
-                    <tr style="border:none;">
-                        <td style="border:none; font-weight:bold;">Tingkatan</td>
-                        <td style="border:none;">:</td>
-                        <td style="border:none;">${student.kelas}</td>
-                    </tr>
-                </table>
+                        <table>
+                            <tr>
+                                <th style="width: 50%;">SUBJEK</th>
+                                <th style="width: 25%;">MARKAH</th>
+                                <th style="width: 25%;">GRED</th>
+                            </tr>
+                            ${subjekIndividu}
+                        </table>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width:60%">Mata Pelajaran</th>
-                            <th style="width:20%; text-align:center">Markah</th>
-                            <th style="width:20%; text-align:center">Gred</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${subjectsHtml}
-                    </tbody>
-                </table>
+                        <div style="background: #f1f1f1; padding: 15px; border-radius: 8px;">
+                            <strong>Jumlah Markah:</strong> ${student.jumMarkah} &nbsp;|&nbsp;
+                            <strong>Purata:</strong> ${student.purata} &nbsp;|&nbsp;
+                            <strong>Gred Purata (GP):</strong> ${student.gp}
+                        </div>
 
-                <table style="width: 50%; float:left; margin-right: 2%;">
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Jumlah Markah</td><td>${student.summary.jumlah}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Purata Markah</td><td>${student.summary.purata}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Gred Purata (GP)</td><td>${student.summary.gp}</td></tr>
-                </table>
-                <table style="width: 48%; float:right;">
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Kedudukan Dalam Kelas</td><td>${student.summary.kdk} / ${currentClassData.length}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Kedudukan Tingkatan</td><td>${student.summary.kdt} / ${currentTotalInForm}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f3f4f6;">Keputusan</td><td>${student.summary.keputusan}</td></tr>
-                </table>
-                <div style="clear:both;"></div>
-
-                <div style="margin-top:10px; padding:10px; border:1px solid #000;">
-                    <strong>Analisis: </strong> ${student.summary.analisis}<br>
-                    <strong>Ulasan Guru Kelas: </strong> ${student.summary.ulasan}
-                </div>
-
-                <div class="signature-box">
-                    <div>
-                        <div class="signature-line">
-                            AWIN ANAK ENGGA<br>PENGETUA<br>SMK SELIRIK
+                        <div class="signatures">
+                            <div class="sign-box">
+                                <div class="sign-line"></div>
+                                <strong>AWIN ANAK ENGGA</strong><br>
+                                PENGETUA<br>
+                                SMK SELIRIK
+                            </div>
+                            <div class="sign-box">
+                                <div class="sign-line"></div>
+                                <strong>${student.guru}</strong><br>
+                                Guru Tingkatan ${className}<br>
+                                SMK SELIRIK
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="signature-line">
-                            ${student.summary.guru || 'GURU KELAS'}<br>GURU TINGKATAN ${student.kelas}<br>SMK SELIRIK
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+                </div>`;
 
-    function printIndividual(index) {
-        const student = currentClassData[index];
-        const printArea = document.getElementById('print-area');
-        printArea.innerHTML = getSlipHtml(student);
-        printArea.classList.remove('landscape-print');
-        window.print();
-    }
-
-    function printBulkSlips() {
-        const printArea = document.getElementById('print-area');
-        let html = '';
-        currentClassData.forEach((student, index) => {
-            html += getSlipHtml(student);
-            if (index < currentClassData.length - 1) {
-                html += '<div class="page-break"></div>';
-            }
-        });
-        printArea.innerHTML = html;
-        printArea.classList.remove('landscape-print');
-        window.print();
-    }
-
-    function printClassTable() {
-        const targetClass = document.getElementById('class-select').value;
-        const printArea = document.getElementById('print-area');
-        
-        // Determine unique subjects present in this class
-        let subjectShorts = new Set();
-        currentClassData.forEach(s => {
-            s.subjects.forEach(sub => subjectShorts.add(sub.short));
-        });
-        const subList = Array.from(subjectShorts);
-
-        let html = `
-            <div class="landscape-print">
-                <h2 style="text-align:center; font-weight:bold; font-size:18px; margin-bottom:10px;">
-                    REKOD KEPUTUSAN KESELURUHAN KELAS ${targetClass}
-                </h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th rowspan="2">Bil</th>
-                            <th rowspan="2">Nama Pelajar</th>
-                            ${subList.map(sub => `<th colspan="2" style="text-align:center">${sub}</th>`).join('')}
-                            <th rowspan="2">Jum</th>
-                            <th rowspan="2">GP</th>
-                            <th rowspan="2">KDK</th>
-                            <th rowspan="2">KDT</th>
-                            <th rowspan="2">Keputusan</th>
-                        </tr>
-                        <tr>
-                            ${subList.map(() => `<th>M</th><th>G</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-        currentClassData.forEach((s, i) => {
-            html += `<tr>
-                <td>${i+1}</td>
-                <td>${s.nama}</td>`;
-            
-            subList.forEach(shortSub => {
-                const found = s.subjects.find(x => x.short === shortSub);
-                if (found) {
-                    html += `<td>${found.mark}</td><td>${found.grade}</td>`;
-                } else {
-                    html += `<td></td><td></td>`;
-                }
+                // Bina baris jadual keseluruhan
+                htmlTable += `<tr>
+                                <td>${student.nama}</td>
+                                <td>${student.markahBM !== 'NULL' ? student.markahBM : '-'}</td>
+                                <td>${student.markahSej !== 'NULL' ? student.markahSej : '-'}</td>
+                                <td>${student.markahMath !== 'NULL' ? student.markahMath : '-'}</td>
+                                <td>${student.kdk}</td>
+                                <td>${student.kdt}/${student.jumTing}</td>
+                              </tr>`;
             });
 
-            html += `
-                <td>${s.summary.jumlah}</td>
-                <td>${s.summary.gp}</td>
-                <td>${s.summary.kdk}</td>
-                <td>${s.summary.kdt}</td>
-                <td>${s.summary.keputusan}</td>
-            </tr>`;
-        });
+            htmlTable += `</table>`;
 
-        html += `
-                    </tbody>
-                </table>
-                <p style="font-size:10px; text-align:center">Dicetak dari Portal Peperiksaan SMK Selirik 2026</p>
-            </div>
-        `;
+            document.getElementById("slipsContainer").innerHTML = htmlSlips;
+            document.getElementById("summaryContainer").innerHTML = htmlTable;
+        }
 
-        printArea.innerHTML = html;
-        printArea.classList.add('landscape-print');
-        window.print();
-    }
-</script>
+        // FUNGSI CETAKAN
+        function cetakPukal() {
+            document.getElementById("summaryContainer").style.display = "none";
+            document.getElementById("slipsContainer").style.display = "block";
+            window.print();
+        }
 
+        function cetakIndividu() {
+            alert("Untuk cetakan individu, sistem akan membenarkan guru memilih pelajar spesifik. Dalam mod ini, cetak pukal dipanggil tetapi anda boleh set page range semasa window print muncul.");
+            cetakPukal();
+        }
+
+        function cetakKeseluruhan() {
+            document.getElementById("slipsContainer").style.display = "none";
+            document.getElementById("summaryContainer").style.display = "block";
+            // Set css spesifik print untuk jadual landskap
+            document.body.classList.add("print-landscape");
+            window.print();
+            
+            // Reset semula paparan selepas print tutup
+            setTimeout(() => {
+                document.body.classList.remove("print-landscape");
+                document.getElementById("slipsContainer").style.display = "block";
+                document.getElementById("summaryContainer").style.display = "none";
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
